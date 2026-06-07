@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papers 05 — Context, Position &amp; Retrieval</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #0d1117;
+            --bg-code: #161b22;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #76B900;
+            --accent-dim: #76B90044;
+            --accent-glow: #76B90033;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .hero > * { position: relative; z-index: 1; }
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero h1 .accent { color: var(--accent); }
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin-bottom: 2rem;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+            white-space: nowrap;
+        }
+        .pipeline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: var(--max-width);
+        }
+        .pipeline-step {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .pipeline-arrow { color: var(--accent); font-size: 0.9rem; font-weight: 700; }
+        .slide {
+            min-height: 100vh;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+            position: absolute;
+            top: 2rem;
+            right: 1.5rem;
+            line-height: 1;
+            user-select: none;
+        }
+        .slide h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+        .slide h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .slide p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .slide p strong { color: var(--text-primary); }
+        .slide ul, .slide ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .slide li { margin-bottom: 0.4rem; }
+        .slide li strong { color: var(--text-primary); }
+        .slide code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            color: #c9d1d9;
+        }
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+        .code-header {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+            padding: 0.4rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .code-block pre { margin: 0; padding: 1rem; overflow-x: auto; }
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .num { color: #79c0ff; }
+        .type { color: #ffa657; }
+        .dir { color: #ff7b72; }
+        .mac { color: #ffa657; }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th {
+            background: var(--bg-code);
+            color: var(--accent);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        .diagram-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-box.dim { color: var(--text-secondary); border-color: var(--border); }
+        .diagram-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+        .diagram-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-vertical .diagram-arrow { font-size: 1.1rem; }
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .hierarchy-level { display: flex; align-items: center; gap: 0.75rem; }
+        .hierarchy-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+        .hierarchy-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .hierarchy-item {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .diagram-panel {
+            padding: 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .diagram-panel.accent-border { border-left: 3px solid var(--accent); }
+        .diagram-panel h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .diagram-panel p, .diagram-panel ul { font-size: 0.85rem; }
+        .callout {
+            background: var(--bg-card);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+        .callout p { margin-bottom: 0; }
+        .callout p + p { margin-top: 0.5rem; }
+        .callout .callout-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+        .contents-list { list-style: none; padding-left: 0; counter-reset: contents; }
+        .contents-list li {
+            counter-increment: contents;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .contents-list li:last-child { border-bottom: none; }
+        .contents-list li::before {
+            content: counter(contents, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 2rem;
+        }
+        .contents-list a { color: var(--text-primary); text-decoration: none; transition: color 0.2s; }
+        .contents-list a:hover { color: var(--accent); }
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .canvas-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .canvas-wrap canvas, .canvas-wrap svg { display: block; margin: 0 auto; max-width: 100%; }
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+        .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
+        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+        @media (max-width: 640px) {
+            .slide { padding: 3rem 1rem; min-height: auto; }
+            .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .diagram-grid.cols-2, .diagram-grid.cols-3 { grid-template-columns: 1fr; }
+            .pipeline { gap: 0.15rem; }
+            .pipeline-step { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
+            .hero h1 { font-size: 1.8rem; }
+            table { font-size: 0.78rem; }
+        }
+    </style>
+</head>
+<body>
+<header class="hero">
+    <div class="series-label">Key LLM Publications Series &mdash; Presentation 05</div>
+    <h1>Context, Position &amp; <span class="accent">Retrieval</span></h1>
+    <p class="subtitle">Five publications that shaped how modern LLMs encode position, ground their answers in external knowledge, and cope with long context &mdash; from RoPE through RAG, DPR, Lost-in-the-Middle, and Self-RAG.</p>
+    <div class="tags">
+        <span class="tag">RoPE</span>
+        <span class="tag">RAG</span>
+        <span class="tag">Dense Retrieval</span>
+        <span class="tag">Long Context</span>
+        <span class="tag">Lost-in-the-Middle</span>
+        <span class="tag">Self-RAG</span>
+    </div>
+    <div class="pipeline">
+        <span class="pipeline-step">Query</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Dense Retrieval</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Augment Context</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Position Encoding</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Generate</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Self-Reflect</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>The Five Papers</h2>
+    <p>Retrieval and context handling are where a raw language model becomes a useful, grounded system. These five publications cover the two halves of the problem: <strong>how a model represents position</strong> inside its context window, and <strong>how it pulls in external knowledge</strong> to answer beyond its parameters.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">RoFormer &mdash; Rotary Position Embedding (RoPE)</a></li>
+        <li><a href="#slide-02">Retrieval-Augmented Generation (RAG)</a></li>
+        <li><a href="#slide-03">Dense Passage Retrieval (DPR)</a></li>
+        <li><a href="#slide-04">Lost in the Middle &mdash; How LLMs Use Long Contexts</a></li>
+        <li><a href="#slide-05">Self-RAG &mdash; Retrieve, Generate, Critique</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>RoFormer: Enhanced Transformer with Rotary Position Embedding</h2>
+    <p><strong>Su, Lu, Pan, Murtadha, Wen &amp; Liu</strong> &middot; 2021 <span class="badge ok">2021</span> &middot; <code>arXiv:2104.09864</code></p>
+
+    <h3>The problem</h3>
+    <p>The original Transformer added absolute sinusoidal position embeddings to token embeddings, and later work bolted on learned relative-position biases. Both are awkward: absolute embeddings don't naturally express the <em>relative</em> distance between two tokens that attention actually cares about, and they generalise poorly to sequence lengths unseen during training.</p>
+
+    <h3>The contribution</h3>
+    <p>RoPE encodes absolute position by <strong>rotating</strong> each query and key vector by an angle proportional to its position. Because the dot product of two rotated vectors depends only on the <em>difference</em> of their rotation angles, attention scores become a function of the <strong>relative</strong> distance between positions &mdash; with no extra parameters. The rotation gives a clean long-range decay and extrapolates more gracefully to longer sequences.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 700 220" width="700" height="220" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .rp-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .rp-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .rp-vec { stroke: #76B900; stroke-width: 2; }
+                .rp-vecd { stroke: #ffa657; stroke-width: 2; }
+                .rp-axis { stroke: #21262d; stroke-width: 1; }
+                .rp-arc { fill: none; stroke: #76B900; stroke-width: 1; stroke-dasharray: 3 3; }
+            </style>
+            <text x="10" y="18" class="rp-ttl">RoPE rotates the (x,y) sub-vector by angle &theta; = m&middot;&omega; (position m)</text>
+            <!-- panel 1: position m=1 -->
+            <circle cx="150" cy="130" r="70" fill="none" class="rp-axis"/>
+            <line x1="80" y1="130" x2="220" y2="130" class="rp-axis"/>
+            <line x1="150" y1="60" x2="150" y2="200" class="rp-axis"/>
+            <line x1="150" y1="130" x2="210" y2="95" class="rp-vec"/>
+            <text x="200" y="90" class="rp-lbl">q at m=1</text>
+            <text x="105" y="215" class="rp-lbl">small rotation</text>
+            <!-- panel 2: position m=5 -->
+            <circle cx="430" cy="130" r="70" fill="none" class="rp-axis"/>
+            <line x1="360" y1="130" x2="500" y2="130" class="rp-axis"/>
+            <line x1="430" y1="60" x2="430" y2="200" class="rp-axis"/>
+            <line x1="430" y1="130" x2="455" y2="63" class="rp-vecd"/>
+            <path d="M 490 130 A 60 60 0 0 0 455 73" class="rp-arc"/>
+            <text x="478" y="105" class="rp-lbl">&theta;</text>
+            <text x="468" y="60" class="rp-lbl">q at m=5</text>
+            <text x="385" y="215" class="rp-lbl">larger rotation</text>
+            <!-- relative note -->
+            <text x="540" y="120" class="rp-lbl">&lang;R&#8323;q, R&#8325;k&rang;</text>
+            <text x="540" y="138" class="rp-lbl">depends only</text>
+            <text x="540" y="156" class="rp-lbl">on (5&minus;1)</text>
+        </svg>
+    </div>
+
+    <h3>Why it matters to a practising engineer</h3>
+    <p>RoPE is now the <strong>default position encoding</strong> in Llama, Mistral, Qwen, Gemma and most modern open-weights models. Understanding it is essential for context-length extension: tricks like <strong>NTK-aware scaling</strong>, <strong>linear position interpolation</strong> and <strong>YaRN</strong> all work by reshaping RoPE's rotation frequencies. When you extend a model's context window, you are almost always manipulating RoPE.</p>
+
+    <div class="callout">
+        <div class="callout-label">Engineer's takeaway</div>
+        <p>If you ever change <code>rope_theta</code> or apply a scaling factor in a model config, you are directly editing the rotation frequencies described in this paper. Get it wrong and the model's attention to relative position breaks &mdash; coherence collapses past the original training length.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</h2>
+    <p><strong>Lewis, Perez, Piktus, Petroni, Karpukhin, Goyal, K&uuml;ttler et al.</strong> (Meta / FAIR) &middot; 2020 <span class="badge ok">2020</span> &middot; <code>arXiv:2005.11401</code></p>
+
+    <h3>The problem</h3>
+    <p>A purely parametric model stores all of its knowledge in its weights. That knowledge is frozen at training time, hard to update, hard to attribute to a source, and prone to confident hallucination. For knowledge-intensive tasks &mdash; open-domain QA, fact verification &mdash; a model that cannot cite where an answer came from is fundamentally limited.</p>
+
+    <h3>The contribution</h3>
+    <p>RAG couples a <strong>parametric seq2seq generator</strong> (BART) with a <strong>non-parametric retriever</strong> (DPR over a dense Wikipedia index). For a query, the retriever fetches the top-k passages; those passages are prepended to the input so generation is <em>conditioned</em> on retrieved evidence. The result: grounding in real sources, knowledge you can update by swapping the index, and markedly fewer hallucinations &mdash; all trained end-to-end.</p>
+
+    <div class="diagram-flow">
+        <div class="diagram-box accent">Query</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box">DPR Retriever<br><small>query encoder</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box dim">Wikipedia Index<br><small>dense passages</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Top-k passages</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box">BART Generator<br><small>conditioned</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Answer</div>
+    </div>
+
+    <h3>Why it matters to a practising engineer</h3>
+    <p>This is the founding paper of the pattern that now underpins most production LLM applications. The two design choices it introduced &mdash; <strong>RAG-Sequence</strong> (one passage conditions the whole output) vs <strong>RAG-Token</strong> (the model can attend to different passages per token) &mdash; still frame how we think about fusing retrieved evidence. Every chatbot grounded in a knowledge base is a descendant of this work.</p>
+
+    <div class="callout">
+        <div class="callout-label">Engineer's takeaway</div>
+        <p>RAG turns "retrain the model" into "re-index the corpus." Updatable knowledge and source attribution are not nice-to-haves bolted on later &mdash; they are the core reason the architecture exists. Treat the index as a first-class, versioned artefact.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>Dense Passage Retrieval for Open-Domain Question Answering</h2>
+    <p><strong>Karpukhin, O&#287;uz, Min, Lewis, Wu, Edunov, Chen &amp; Yih</strong> (Meta / FAIR) &middot; 2020 <span class="badge ok">2020</span> &middot; <code>arXiv:2004.04906</code></p>
+
+    <h3>The problem</h3>
+    <p>For open-domain QA, retrieval had long been dominated by sparse lexical methods like <strong>BM25</strong> &mdash; powerful but brittle: they match on term overlap, so a question and its answer passage that use different vocabulary are invisible to each other. The open question was whether learned dense representations could actually beat a strong BM25 baseline in practice.</p>
+
+    <h3>The contribution</h3>
+    <p>DPR trains a <strong>dual-encoder</strong>: one BERT encoder for questions, one for passages. Training uses <strong>in-batch negatives</strong> &mdash; every other passage in the batch serves as a negative example, making each gradient step cheaply informative. At inference, retrieval is a simple <strong>inner product</strong> (maximum inner-product search) between the question vector and a pre-computed passage index. DPR beat BM25 by a wide margin on retrieval accuracy and became the retrieval backbone behind RAG.</p>
+
+    <div class="diagram-flow">
+        <div class="diagram-box accent">Question<br><small>"who wrote..."</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box">Question Encoder<br><small>BERT E&#x2096;</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">q vector</div>
+        <div class="diagram-arrow">&middot;</div>
+        <div class="diagram-box accent">p vector</div>
+        <div class="diagram-arrow">&larr;</div>
+        <div class="diagram-box">Passage Encoder<br><small>BERT E&#x209a;</small></div>
+        <div class="diagram-arrow">&larr;</div>
+        <div class="diagram-box dim">Passage</div>
+    </div>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 700 130" width="700" height="130" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .dp-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .dp-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+            </style>
+            <text x="10" y="18" class="dp-ttl">Relevance score = sim(q, p) = q&#7488; p   (maximum inner-product search)</text>
+            <rect x="30" y="40" width="120" height="34" rx="6" fill="#161b22" stroke="#76B900"/>
+            <text x="50" y="62" class="dp-lbl">q  &middot;  vector</text>
+            <text x="170" y="62" class="dp-ttl" style="font-size:18px;">&times;</text>
+            <rect x="200" y="40" width="120" height="34" rx="6" fill="#161b22" stroke="#76B900"/>
+            <text x="220" y="62" class="dp-lbl">p  &middot;  vector</text>
+            <text x="345" y="62" class="dp-ttl" style="font-size:16px;">&rarr;</text>
+            <rect x="375" y="40" width="150" height="34" rx="6" fill="rgba(118,185,0,0.08)" stroke="#76B900"/>
+            <text x="395" y="62" class="dp-lbl">scalar score</text>
+            <text x="30" y="100" class="dp-lbl">Index millions of passage vectors offline &rarr; FAISS retrieves top-k by inner product in milliseconds.</text>
+        </svg>
+    </div>
+
+    <h3>Why it matters to a practising engineer</h3>
+    <p>DPR is the direct ancestor of every modern embedding-based retriever (BGE, E5, GTE, OpenAI embeddings). The dual-encoder + ANN-index + inner-product pattern <em>is</em> the standard RAG retrieval stack. Two lessons carry forward: <strong>in-batch negatives</strong> are how contrastive retrievers are trained efficiently, and <strong>hard negatives</strong> (here, BM25-mined distractors) sharply improve quality.</p>
+
+    <div class="callout">
+        <div class="callout-label">Engineer's takeaway</div>
+        <p>When you pick an embedding model and a vector store, you are choosing a DPR-style dual encoder and a MIPS index. Knowing this paper tells you exactly which knobs &mdash; negative sampling, encoder choice, index precision &mdash; drive retrieval recall.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Lost in the Middle: How Language Models Use Long Contexts</h2>
+    <p><strong>Liu, Lin, Hewitt, Paranjape, Bevilacqua, Petroni &amp; Liang</strong> (Stanford) &middot; 2023 <span class="badge warn">2023</span> &middot; <code>arXiv:2307.03172</code></p>
+
+    <h3>The problem</h3>
+    <p>Vendors race to advertise ever-larger context windows &mdash; 32k, 128k, 1M tokens. But a big context window is only useful if the model actually <em>uses</em> all of it. Does a model attend uniformly across its input, or does position matter?</p>
+
+    <h3>The contribution</h3>
+    <p>Through controlled multi-document QA experiments, the authors show a striking <strong>U-shaped curve</strong>: models retrieve a relevant fact most reliably when it sits at the <em>very start</em> or <em>very end</em> of the context, and accuracy <strong>sags in the middle</strong>. The effect is large and robust across models &mdash; a long context window does <em>not</em> imply uniform use of context.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 700 240" width="700" height="240" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .lm-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lm-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .lm-axis { stroke: #21262d; stroke-width: 1; }
+                .lm-curve { fill: none; stroke: #76B900; stroke-width: 2.5; }
+                .lm-dot { fill: #76B900; }
+            </style>
+            <text x="10" y="20" class="lm-ttl">Accuracy vs. position of the relevant document in context</text>
+            <!-- axes -->
+            <line x1="70" y1="200" x2="640" y2="200" class="lm-axis"/>
+            <line x1="70" y1="40" x2="70" y2="200" class="lm-axis"/>
+            <text x="20" y="55" class="lm-lbl">high</text>
+            <text x="20" y="200" class="lm-lbl">low</text>
+            <text x="80" y="225" class="lm-lbl">start of context</text>
+            <text x="300" y="225" class="lm-lbl">middle</text>
+            <text x="560" y="225" class="lm-lbl">end of context</text>
+            <!-- gridlines -->
+            <line x1="70" y1="60" x2="640" y2="60" stroke="#21262d" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <line x1="70" y1="130" x2="640" y2="130" stroke="#21262d" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <!-- U-shaped curve -->
+            <path d="M 80 60 C 200 110, 280 175, 355 178 C 430 175, 510 110, 630 70" class="lm-curve"/>
+            <circle cx="80" cy="60" r="5" class="lm-dot"/>
+            <circle cx="355" cy="178" r="5" fill="#ffa657"/>
+            <circle cx="630" cy="70" r="5" class="lm-dot"/>
+            <text x="90" y="52" class="lm-lbl">best (primacy)</text>
+            <text x="300" y="172" class="lm-lbl" style="fill:#ffa657;">worst (lost in the middle)</text>
+            <text x="520" y="62" class="lm-lbl">best (recency)</text>
+        </svg>
+    </div>
+
+    <h3>Why it matters to a practising engineer</h3>
+    <p>This is a direct design constraint on RAG and prompt construction. <strong>Where you place a retrieved passage in the prompt changes whether the model sees it.</strong> Practical consequences: re-rank so the most relevant chunks land at the start and end; don't blindly stuff 100 passages into a 128k window and assume the model reads them all; and treat "we have a long context model" as no substitute for good retrieval and re-ranking.</p>
+
+    <div class="callout">
+        <div class="callout-label">Engineer's takeaway</div>
+        <p>Position is a retrieval problem in disguise. Order your context deliberately &mdash; key evidence at the edges, filler in the middle &mdash; and keep the relevant set small. More tokens is not more attention.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection</h2>
+    <p><strong>Asai, Wu, Wang, Sil &amp; Hajishirzi</strong> (University of Washington / Allen Institute for AI) &middot; 2023 <span class="badge warn">2023</span> &middot; <code>arXiv:2310.11511</code></p>
+
+    <h3>The problem</h3>
+    <p>Standard RAG retrieves a fixed number of passages for <em>every</em> query, whether or not retrieval is needed, and never checks whether the retrieved passages are actually relevant or whether its own output is supported by them. This wastes effort on simple queries and lets irrelevant passages drag generation off course.</p>
+
+    <h3>The contribution</h3>
+    <p>Self-RAG trains a single model to emit special <strong>reflection tokens</strong> that make retrieval and quality <em>decisions on demand</em>. The model decides <strong>whether</strong> to retrieve at all, critiques whether each retrieved passage is <strong>relevant</strong>, and critiques whether its own generated answer is <strong>supported</strong> by the evidence and <strong>useful</strong>. The result is adaptive, self-evaluating RAG that retrieves only when helpful and can filter its own mistakes.</p>
+
+    <div class="diagram-vertical">
+        <div class="diagram-box accent">Input query</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Reflection: <code>[Retrieve?]</code><br><small>yes / no, on demand</small></div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box dim">If yes &rarr; retrieve passages</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Critique: <code>[IsRel]</code><br><small>is each passage relevant?</small></div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Generate candidate segment</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Critique: <code>[IsSup]</code> &middot; <code>[IsUse]</code><br><small>supported? useful?</small></div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box accent">Best-scoring output</div>
+    </div>
+
+    <h3>Why it matters to a practising engineer</h3>
+    <p>Self-RAG is the bridge from static retrieval pipelines to <strong>agentic, self-correcting RAG</strong>. The ideas &mdash; conditional retrieval, relevance grading of retrieved chunks, and self-verification of grounding &mdash; reappear directly in modern patterns like <strong>Corrective RAG (CRAG)</strong>, retrieval graders in LangGraph, and reflection loops in agent frameworks. It reframes retrieval as a decision the model makes, not a fixed preprocessing step.</p>
+
+    <div class="callout">
+        <div class="callout-label">Engineer's takeaway</div>
+        <p>If you are building a RAG agent, the relevance-grading and groundedness-checking steps you write are exactly Self-RAG's reflection tokens, externalised as orchestration. Conditional retrieval saves cost; self-critique cuts hallucination.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>What to Take Away</h2>
+    <ul>
+        <li><strong>RoPE is the position encoding you actually ship.</strong> Relative position via rotation, no extra parameters, and the lever behind every context-extension trick (interpolation, NTK, YaRN).</li>
+        <li><strong>RAG is the founding grounding pattern.</strong> Retrieve, then condition generation on evidence &mdash; updatable knowledge and attribution instead of frozen, unverifiable weights.</li>
+        <li><strong>DPR is the retrieval backbone.</strong> Dual-encoder + in-batch negatives + inner-product search is the template for every modern embedding retriever.</li>
+        <li><strong>Lost in the Middle is a hard constraint.</strong> A long context window is not uniformly used &mdash; order matters, so re-rank and keep the relevant set small.</li>
+        <li><strong>Self-RAG makes retrieval a decision.</strong> Conditional retrieval plus self-critique is the seed of agentic, self-correcting RAG.</li>
+    </ul>
+    <p>Together these five trace a single arc: from <em>how a model represents position</em> in its window, to <em>how it grounds answers</em> in external knowledge, to <em>how it reasons about whether that knowledge is even worth retrieving.</em></p>
+
+    <div class="callout">
+        <div class="callout-label">Where to next</div>
+        <p>Self-RAG already turns retrieval into a decision the model makes &mdash; the natural next step is letting the model take <em>actions</em>. <strong>Presentation 06 &mdash; Agents &amp; Tool Use</strong> covers ReAct, tool-calling, and the publications that turn a grounded LLM into an agent that plans, calls tools, and acts.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLM_Hub_Key_Publications">Key LLM Publications Series</a></p>
+    <p style="margin-top:0.5rem;font-size:0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLM_Hub_Key_Publications">Back to Series Index</a></p>
+</footer>
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.style.opacity = '0';
+        slide.style.transform = 'translateY(30px)';
+        slide.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(slide);
+    });
+</script>
+</body>
+</html>
