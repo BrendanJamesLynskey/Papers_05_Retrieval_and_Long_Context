@@ -9,15 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-card: #0d1117;
-            --bg-code: #161b22;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent: #76B900;
-            --accent-dim: #76B90044;
-            --accent-glow: #76B90033;
-            --border: #21262d;
+            --bg-primary: #f2f1ee;
+            --bg-card: #eae8e4;
+            --bg-code: #e1dfd9;
+            --text-primary: #171717;
+            --text-secondary: #615f59;
+            --accent: #36774d;
+            --accent-dim: #36774d44;
+            --accent-glow: #36774d1a;
+            --border: #d1cfc7;
             --font-display: 'Space Grotesk', sans-serif;
             --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             --font-body: 'Inter', sans-serif;
@@ -165,7 +165,7 @@
             border: 1px solid var(--border);
             padding: 0.05rem 0.35rem;
             border-radius: 3px;
-            color: #c9d1d9;
+            color: #2d2d2a;
         }
         .code-block {
             background: var(--bg-code);
@@ -178,7 +178,7 @@
             font-family: var(--font-mono);
             font-size: 0.75rem;
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.08);
+            background: rgba(54,119,77,0.08);
             padding: 0.4rem 1rem;
             border-bottom: 1px solid var(--border);
         }
@@ -187,19 +187,19 @@
             font-family: var(--font-mono);
             font-size: 0.85rem;
             line-height: 1.6;
-            color: #c9d1d9;
+            color: #2d2d2a;
             background: transparent;
             border: none;
             padding: 0;
         }
-        .kw { color: #ff7b72; }
-        .fn { color: #d2a8ff; }
-        .str { color: #a5d6ff; }
-        .cm { color: #8b949e; font-style: italic; }
-        .num { color: #79c0ff; }
-        .type { color: #ffa657; }
-        .dir { color: #ff7b72; }
-        .mac { color: #ffa657; }
+        .kw { color: #9d1128; }
+        .fn { color: #422750; }
+        .str { color: #172539; }
+        .cm { color: #615f59; font-style: italic; }
+        .num { color: #173055; }
+        .type { color: #95621f; }
+        .dir { color: #9d1128; }
+        .mac { color: #95621f; }
         .table-wrap {
             overflow-x: auto;
             margin: 1.25rem 0;
@@ -223,7 +223,7 @@
             color: var(--text-secondary);
         }
         tr:last-child td { border-bottom: none; }
-        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        tr:nth-child(even) td { background: rgba(234,232,228,0.5); }
         .diagram-flow {
             display: flex;
             flex-wrap: wrap;
@@ -247,7 +247,7 @@
             text-align: center;
             white-space: nowrap;
         }
-        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(54,119,77,0.08); }
         .diagram-box.dim { color: var(--text-secondary); border-color: var(--border); }
         .diagram-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
         .diagram-vertical {
@@ -290,7 +290,7 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
         }
-        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(54,119,77,0.08); }
         .diagram-grid {
             display: grid;
             gap: 0.75rem;
@@ -384,8 +384,8 @@
             margin-left: 0.3rem;
         }
         .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
-        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+        .badge.warn  { border-color: #95621f; color: #95621f; background: rgba(149,98,31,0.08); }
+        .badge.bad   { border-color: #9d1128; color: #9d1128; background: rgba(157,17,40,0.08); }
         @media (max-width: 640px) {
             .slide { padding: 3rem 1rem; min-height: auto; }
             .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
@@ -453,12 +453,12 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 700 220" width="700" height="220" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .rp-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .rp-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
-                .rp-vec { stroke: #76B900; stroke-width: 2; }
-                .rp-vecd { stroke: #ffa657; stroke-width: 2; }
-                .rp-axis { stroke: #21262d; stroke-width: 1; }
-                .rp-arc { fill: none; stroke: #76B900; stroke-width: 1; stroke-dasharray: 3 3; }
+                .rp-lbl { fill: #615f59; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .rp-ttl { fill: #36774d; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .rp-vec { stroke: #36774d; stroke-width: 2; }
+                .rp-vecd { stroke: #95621f; stroke-width: 2; }
+                .rp-axis { stroke: #d1cfc7; stroke-width: 1; }
+                .rp-arc { fill: none; stroke: #36774d; stroke-width: 1; stroke-dasharray: 3 3; }
             </style>
             <text x="10" y="18" class="rp-ttl">RoPE rotates the (x,y) sub-vector by angle &theta; = m&middot;&omega; (position m)</text>
             <!-- panel 1: position m=1 -->
@@ -555,17 +555,17 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 700 130" width="700" height="130" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .dp-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .dp-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .dp-lbl { fill: #615f59; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .dp-ttl { fill: #36774d; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
             </style>
             <text x="10" y="18" class="dp-ttl">Relevance score = sim(q, p) = q&#7488; p   (maximum inner-product search)</text>
-            <rect x="30" y="40" width="120" height="34" rx="6" fill="#161b22" stroke="#76B900"/>
+            <rect x="30" y="40" width="120" height="34" rx="6" fill="#e1dfd9" stroke="#36774d"/>
             <text x="50" y="62" class="dp-lbl">q  &middot;  vector</text>
             <text x="170" y="62" class="dp-ttl" style="font-size:18px;">&times;</text>
-            <rect x="200" y="40" width="120" height="34" rx="6" fill="#161b22" stroke="#76B900"/>
+            <rect x="200" y="40" width="120" height="34" rx="6" fill="#e1dfd9" stroke="#36774d"/>
             <text x="220" y="62" class="dp-lbl">p  &middot;  vector</text>
             <text x="345" y="62" class="dp-ttl" style="font-size:16px;">&rarr;</text>
-            <rect x="375" y="40" width="150" height="34" rx="6" fill="rgba(118,185,0,0.08)" stroke="#76B900"/>
+            <rect x="375" y="40" width="150" height="34" rx="6" fill="rgba(54,119,77,0.08)" stroke="#36774d"/>
             <text x="395" y="62" class="dp-lbl">scalar score</text>
             <text x="30" y="100" class="dp-lbl">Index millions of passage vectors offline &rarr; FAISS retrieves top-k by inner product in milliseconds.</text>
         </svg>
@@ -594,11 +594,11 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 700 240" width="700" height="240" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .lm-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .lm-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
-                .lm-axis { stroke: #21262d; stroke-width: 1; }
-                .lm-curve { fill: none; stroke: #76B900; stroke-width: 2.5; }
-                .lm-dot { fill: #76B900; }
+                .lm-lbl { fill: #615f59; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .lm-ttl { fill: #36774d; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .lm-axis { stroke: #d1cfc7; stroke-width: 1; }
+                .lm-curve { fill: none; stroke: #36774d; stroke-width: 2.5; }
+                .lm-dot { fill: #36774d; }
             </style>
             <text x="10" y="20" class="lm-ttl">Accuracy vs. position of the relevant document in context</text>
             <!-- axes -->
@@ -610,15 +610,15 @@
             <text x="300" y="225" class="lm-lbl">middle</text>
             <text x="560" y="225" class="lm-lbl">end of context</text>
             <!-- gridlines -->
-            <line x1="70" y1="60" x2="640" y2="60" stroke="#21262d" stroke-width="0.5" stroke-dasharray="2 4"/>
-            <line x1="70" y1="130" x2="640" y2="130" stroke="#21262d" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <line x1="70" y1="60" x2="640" y2="60" stroke="#d1cfc7" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <line x1="70" y1="130" x2="640" y2="130" stroke="#d1cfc7" stroke-width="0.5" stroke-dasharray="2 4"/>
             <!-- U-shaped curve -->
             <path d="M 80 60 C 200 110, 280 175, 355 178 C 430 175, 510 110, 630 70" class="lm-curve"/>
             <circle cx="80" cy="60" r="5" class="lm-dot"/>
-            <circle cx="355" cy="178" r="5" fill="#ffa657"/>
+            <circle cx="355" cy="178" r="5" fill="#95621f"/>
             <circle cx="630" cy="70" r="5" class="lm-dot"/>
             <text x="90" y="52" class="lm-lbl">best (primacy)</text>
-            <text x="300" y="172" class="lm-lbl" style="fill:#ffa657;">worst (lost in the middle)</text>
+            <text x="300" y="172" class="lm-lbl" style="fill:#95621f;">worst (lost in the middle)</text>
             <text x="520" y="62" class="lm-lbl">best (recency)</text>
         </svg>
     </div>
